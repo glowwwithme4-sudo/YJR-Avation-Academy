@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>YJR Aviation Academy</title>
+<style>
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #eef3f9;
+  color: #172b4d;
+}
+header {
+  background: #082b50;
+  color: white;
+  text-align: center;
+  padding: 25px 12px;
+}
+header h1 { margin: 0 0 8px; }
+.container {
+  max-width: 700px;
+  margin: 25px auto;
+  padding: 20px;
+}
+.card {
+  background: white;
+  padding: 22px;
+  border-radius: 14px;
+  box-shadow: 0 3px 12px #0001;
+}
+button, select {
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ccd5e0;
+  font-size: 16px;
+  cursor: pointer;
+}
+select { width: 100%; margin: 10px 0 18px; }
+.option {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  text-align: left;
+  background: #f3f7fc;
+}
+.option:hover { background: #dceaff; }
+.correct { background: #c8f7d2 !important; }
+.wrong { background: #ffd5d5 !important; }
+.primary {
+  background: #0759a5;
+  color: white;
+  border: 0;
+  margin: 8px 5px 0 0;
+}
+#feedback { font-weight: bold; margin: 16px 0; }
+footer { text-align: center; padding: 20px; color: #52657c; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>✈️ YJR Aviation Academy</h1>
+  <p>Air Regulations — MCQ Practice</p>
+</header>
+
+<div class="container">
+  <div class="card">
+    <label for="mode"><b>Choose practice mode</b></label>
+    <select id="mode">
+      <option value="all">All available questions</option>
+    </select>
+
+    <p id="progress">Question 1</p>
+    <h3 id="question">Welcome to YJR Aviation Academy!</h3>
+    <div id="options"></div>
+    <p id="feedback">Select an answer to begin.</p>
+
+    <button class="primary" onclick="previousQuestion()">Previous</button>
+    <button class="primary" onclick="nextQuestion()">Next</button>
+    <button class="primary" onclick="showResult()">Finish & View Score</button>
+    <button onclick="restartQuiz()">Restart</button>
+
+    <h3 id="result"></h3>
+  </div>
+</div>
+
+<footer>
+  © YJR Aviation Academy | Learn • Practise • Improve
+</footer>
+
+<script>
+const questions = [
+  {
+    q: "What does ICAO stand for?",
+    options: [
+      "International Civil Aviation Organization",
+      "Indian Civil Aircraft Office",
+      "International Commercial Airline Office",
+      "Indian Civil Aviation Organization"
+    ],
+    answer: 0
+  },
+  {
+    q: "In which year was the Chicago Convention signed?",
+    options: ["1919", "1944", "1947", "1950"],
+    answer: 1
+  },
+  {
+    q: "Where is ICAO headquarters located?",
+    options: ["London", "Geneva", "Montreal", "New Delhi"],
+    answer: 2
+  },
+  {
+    q: "Which convention is associated with the establishment of ICAO?",
+    options: [
+      "Chicago Convention, 1944",
+      "Paris Convention, 1919",
+      "Warsaw Convention, 1929",
+      "Tokyo Convention, 1963"
+    ],
+    answer: 0
+  },
+  {
+    q: "Which organization develops international Standards and Recommended Practices for civil aviation?",
+    options: ["IATA", "ICAO", "UNESCO", "WHO"],
+    answer: 1
+  }
+];
+
+let current = 0;
+let answers = {};
+
+function renderQuestion() {
+  const q = questions[current];
+  document.getElementById("progress").textContent =
+    `Question ${current + 1} of ${questions.length}`;
+  document.getElementById("question").textContent = q.q;
+  document.getElementById("options").innerHTML = "";
+  document.getElementById("result").textContent = "";
+
+  q.options.forEach((option, index) => {
+    const button = document.createElement("button");
+    button.className = "option";
+    button.textContent = String.fromCharCode(65 + index) + ". " + option;
+
+    if (answers[current] === index) {
+      button.classList.add(index === q.answer ? "correct" : "wrong");
+    }
+
+    button.onclick = () => selectAnswer(index);
+    document.getElementById("options").appendChild(button);
+  });
+
+  document.getElementById("feedback").textContent =
+    answers[current] === undefined
+      ? "Choose the correct option."
+      : answers[current] === q.answer
+        ? "✅ Correct answer!"
+        : "❌ Incorrect. Correct answer: " +
+          String.fromCharCode(65 + q.answer) + ". " + q.options[q.answer];
+}
+
+function selectAnswer(index) {
+  if (answers[current] !== undefined) return;
+  answers[current] = index;
+  renderQuestion();
+}
+
+function nextQuestion() {
+  if (current < questions.length - 1) {
+    current++;
+    renderQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function previousQuestion() {
+  if (current > 0) {
+    current--;
+    renderQuestion();
+  }
+}
+
+function showResult() {
+  const attempted = Object.keys(answers).length;
+  const score = questions.reduce(
+    (total, q, i) => total + (answers[i] === q.answer ? 1 : 0), 0
+  );
+
+  document.getElementById("result").textContent =
+    `Your score: ${score}/${questions.length} | Attempted: ${attempted}/${questions.length}`;
+}
+
+function restartQuiz() {
+  current = 0;
+  answers = {};
+  renderQuestion();
+}
+
+renderQuestion();
+</script>
+</body>
+</html>
